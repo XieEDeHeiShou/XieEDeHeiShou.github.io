@@ -9,5 +9,5 @@ published: true
 
 + 核心业务能放在服务端实现的尽量放在服务端实现.
 
-![2019-05-17-qq-chat-log.png](img/2019/05-17-qq-chat-log.png)
+![2019-05-17-qq-chat-log.png]({% link /img/2019/05-17-qq-chat-log.png %})
 
