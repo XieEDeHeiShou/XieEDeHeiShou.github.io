@@ -3,7 +3,7 @@ title: "如何保护你的客户端应用远离被破解"
 published: true
 ---
 
-这篇博客主要记录了我在反破解方面的一些见闻以及思考.
+这篇博客主要记录了我在工具类应用反破解方面的一些见闻以及思考.
 
 + 最基础的一点是服务端要能够封禁用户账户.
 
@@ -18,7 +18,7 @@ For example:
 但服务端能够对被破解的应用推送强制更新.
 例如, 原应用的 applicationId = com.domain.sample, versionCode = 1, 被破解后 applicationId
 = com.domain.sampl, versionCode = 23, 则可以在服务端配置 com.domain.sampl 的强制更新,
-将破解版的用户其转化为正版应用的用户.
+将使用破解版的用户转化为正版应用的用户.
 
 For example: 蓝色内容为正版用户检查更新时创建的 redis 缓存, 黑色的则是破解版用户.
 
