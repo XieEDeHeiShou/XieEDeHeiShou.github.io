@@ -10,7 +10,7 @@ published: true
 程序在运行期间会抛出各种各样的异常, 其中一部分会被 Spring 按照约定的方式处理, 并返回相关的状态码以及消息给客户端或者将浏览器导航到特定的页面,
 另一部分则统一返回 `500 Internal server error`. 那么这一功能是怎么实现的呢?
 
-##### HandlerExceptionResolver:
+#### HandlerExceptionResolver:
 
 经过一些搜索和翻阅源码后找的了相关的 `HandlerExceptionResolver` 接口:
 
@@ -48,7 +48,8 @@ public interface HandlerExceptionResolver {
 }
 ``` 
 
-##### DefaultHandlerExceptionResolver:
+
+#### DefaultHandlerExceptionResolver:
 
 `DefaultHandlerExceptionResolver` 处理了一部分异常, 并将其转化成了相应的 `ModelAndView`.
 其中应用层比较常用的 400(SC_BAD_REQUEST) 状态以及 404(SC_NOT_FOUND) 状态对应的异常包括:
@@ -105,17 +106,20 @@ public interface HandlerExceptionResolver {
 </tbody>
 </table>
 
-然而这几种异常的构造器从 Controller 或者 Service 中调用起来都不太方便.
+然而这几种异常的构造器从 Controller 或者 Service 中调用起来都不太方便, 让我们再看看其他的异常处理方式.
 
-##### ExceptionHandlerExceptionResolver:
+
+#### ExceptionHandlerExceptionResolver:
 
 这个类负责处理 `@ExceptionHandler` 注解过的方法, 常用于对某种类型的异常做统一处理.
 
-##### SimpleMappingExceptionResolver:
+
+#### SimpleMappingExceptionResolver:
 
 当抛出异常时, 这个类负责按照特定的映射关系返回对应的视图.
 
-##### ResponseStatusExceptionResolver:
+
+#### ResponseStatusExceptionResolver:
 
 当应用抛出 `ResponseStatusException` 或者抛出 `@ResponseStatus` 注解过的异常时, 都会被这个类捕获. 并且这个类内部有
 `MessageSource` 成员变量, 因此它也可以对异常信息做国际化处理, 美中不足的一点是暂时无法对异常信息进参数绑定:
@@ -140,6 +144,9 @@ public class ResponseStatusExceptionResolver extends AbstractHandlerExceptionRes
 }
 // spring-webmvc-5.1.8.RELEASE
 ```
+
+
+### Summary:
 
 对于 Spring 提供的这几种异常处理方式进行研究后不难发现, 对于应用想要以最简单的方式抛出异常并让浏览器导航到特定错误页的话, 可以针对
 `SimpleMappingExceptionResolver` 进行配置, 而对于返回 Json 消息的应用, 则可以考虑抛出 `ResponseStatusException`.
