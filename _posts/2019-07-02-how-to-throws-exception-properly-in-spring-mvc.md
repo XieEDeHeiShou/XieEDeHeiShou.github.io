@@ -125,3 +125,31 @@ public interface HandlerExceptionResolver {
 
 当抛出异常时, 这个类负责按照特定的映射关系返回对应的视图.
 
+##### ResponseStatusExceptionResolver:
+
+当应用抛出 `ResponseStatusException` 或者抛出 `@ResponseStatus` 注解过的异常时, 都会被这个类捕获. 并且这个类内部有
+`MessageSource` 成员变量, 因此它也可以对异常信息做国际化处理, 美中不足的一点是暂时无法对异常信息进参数绑定:
+
+```java
+public class ResponseStatusExceptionResolver extends AbstractHandlerExceptionResolver implements MessageSourceAware {
+    
+    protected ModelAndView applyStatusAndReason(int statusCode, @Nullable String reason, HttpServletResponse response)
+    		throws IOException {
+    
+    	if (!StringUtils.hasLength(reason)) {
+    		response.sendError(statusCode);
+    	}
+    	else {
+    		String resolvedReason = (this.messageSource != null ?
+    				this.messageSource.getMessage(reason, null, reason, LocaleContextHolder.getLocale()) :
+    				reason);
+    		response.sendError(statusCode, resolvedReason);
+    	}
+    	return new ModelAndView();
+    }
+}
+// spring-webmvc-5.1.8.RELEASE
+```
+
+对于 Spring 提供的这几种异常处理方式进行研究后不难发现, 对于应用想要以最简单的方式抛出异常并让浏览器导航到特定错误页的话, 可以针对
+`SimpleMappingExceptionResolver` 进行配置, 而对于返回 Json 消息的应用, 则可以考虑抛出 `ResponseStatusException`.
