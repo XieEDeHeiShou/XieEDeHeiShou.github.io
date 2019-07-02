@@ -7,22 +7,14 @@ published: true
 
 ### How it works:
 
-程序在运行期间会抛出各种各样的异常, 其中一部分会被 Spring 按照约定的方式处理, 并返回相关的状态码给客户端,
-另一部分则统一返回 `500 Internal server error`.
+程序在运行期间会抛出各种各样的异常, 其中一部分会被 Spring 按照约定的方式处理, 并返回相关的状态码以及消息给客户端或者将浏览器导航到特定的页面,
+另一部分则统一返回 `500 Internal server error`. 那么这一功能是怎么实现的呢?
 
 ##### HandlerExceptionResolver:
 
 经过一些搜索和翻阅源码后找的了相关的 `HandlerExceptionResolver` 接口:
 
 ```java
-
-package org.springframework.web.servlet;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.springframework.lang.Nullable;
-
 /**
  * Interface to be implemented by objects that can resolve exceptions thrown during
  * handler mapping or execution, in the typical case to error views. Implementors are
@@ -39,8 +31,8 @@ public interface HandlerExceptionResolver {
 
 	/**
 	 * Try to resolve the given exception that got thrown during handler execution,
-	 * returning a {@link ModelAndView} that represents a specific error page if appropriate.
-	 * <p>The returned {@code ModelAndView} may be {@linkplain ModelAndView#isEmpty() empty}
+	 * returning a ModelAndView that represents a specific error page if appropriate.
+	 * <p>The returned {@code ModelAndView} may be empty
 	 * to indicate that the exception has been resolved successfully but that no view
 	 * should be rendered, for instance by setting a status code.
 	 * @param request current HTTP request
@@ -52,16 +44,14 @@ public interface HandlerExceptionResolver {
 	 * or {@code null} for default processing in the resolution chain
 	 */
 	@Nullable
-	ModelAndView resolveException(
-			HttpServletRequest request, HttpServletResponse response, @Nullable Object handler, Exception ex);
-
+	ModelAndView resolveException(HttpServletRequest request, HttpServletResponse response, @Nullable Object handler, Exception ex);
 }
 ``` 
 
 ##### DefaultHandlerExceptionResolver:
 
-查看它默认的几个实现类以后, 发现 `DefaultHandlerExceptionResolver` 处理了一部分异常, 并将其转化成了相应的状态码返回给了客户端.
-其中应用层比较关心的 400(SC_BAD_REQUEST) 状态以及 404(SC_NOT_FOUND) 状态对应的异常包括:
+`DefaultHandlerExceptionResolver` 处理了一部分异常, 并将其转化成了相应的 `ModelAndView`.
+其中应用层比较常用的 400(SC_BAD_REQUEST) 状态以及 404(SC_NOT_FOUND) 状态对应的异常包括:
 
 <table>
 <thead>
