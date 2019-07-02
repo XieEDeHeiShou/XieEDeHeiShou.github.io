@@ -3,16 +3,14 @@ title: "如何优雅的抛出异常|How to throws exception properly in Spring m
 published: true
 ---
 
-# Question: 如何优雅的抛出异常|How to throws exception properly in Spring mvc
-
 ### Answer: throws new ResponseStatusException(...);
 
 ### How it works:
 
-##### HandlerExceptionResolver:
-
 程序在运行期间会抛出各种各样的异常, 其中一部分会被 Spring 按照约定的方式处理, 并返回相关的状态码给客户端,
 另一部分则统一返回 `500 Internal server error`.
+
+##### HandlerExceptionResolver:
 
 经过一些搜索和翻阅源码后找的了相关的 `HandlerExceptionResolver` 接口:
 
@@ -76,42 +74,49 @@ public interface HandlerExceptionResolver {
 <tbody>
 <tr class="altColor">
 <td><p>MissingServletRequestParameterException</p></td>
-<td><p>400 (SC_BAD_REQUEST)</p></td>
+<td><p>400</p></td>
 <td><p>Spring 会在请求的接口缺少必要的参数时抛出该异常. 与 @RequestParameter 相关.</p></td>
 </tr>
 <tr class="rowColor">
 <td><p>ServletRequestBindingException</p></td>
-<td><p>400 (SC_BAD_REQUEST)</p></td>
+<td><p>400</p></td>
 <td><p>Spring 会在请求的接口缺少必要的属性时抛出该异常. 与 @RequestAttribute 相关.</p></td>
 </tr>
 <tr class="rowColor">
 <td><p>TypeMismatchException</p></td>
-<td><p>400 (SC_BAD_REQUEST)</p></td>
+<td><p>400</p></td>
 <td><p>Spring 会在请求的接口无法将字符串解析成对应的类型时抛出该异常.</p></td>
 </tr>
 <tr class="altColor">
 <td><p>HttpMessageNotReadableException</p></td>
-<td><p>400 (SC_BAD_REQUEST)</p></td>
+<td><p>400</p></td>
+<td><p>Spring 会在 HttpMessageConverter 从 InputStream 中读消息失败时抛出该异常.</p></td>
 </tr>
 <tr class="altColor">
 <td><p>MethodArgumentNotValidException</p></td>
-<td><p>400 (SC_BAD_REQUEST)</p></td>
+<td><p>400</p></td>
 <td><p>Spring 会在请求的接口校验失败时抛出该异常. 与 @Valid, @RequestPart, @RequestBody 相关.</p></td>
 </tr>
 <tr class="rowColor">
 <td><p>MissingServletRequestPartException</p></td>
-<td><p>400 (SC_BAD_REQUEST)</p></td>
+<td><p>400</p></td>
 <td><p>Spring 会在请求的接口缺少必要的部分时抛出该异常. 与 @RequestPart 相关.</p></td>
 </tr>
 <tr class="altColor">
 <td><p>BindException</p></td>
-<td><p>400 (SC_BAD_REQUEST)</p></td>
+<td><p>400</p></td>
 <td><p>Spring 会在请求的接口绑定参数失败时抛出该异常. 与 @Valid, BindingResult 相关.</p></td>
 </tr>
 <tr class="rowColor">
 <td><p>NoHandlerFoundException</p></td>
-<td><p>404 (SC_NOT_FOUND)</p></td>
+<td><p>404</p></td>
 <td><p>Spring 会在找不到请求的对应的接口, 并且 spring.mvc.throw-exception-if-no-handler-found=true 时抛出该异常.</p></td>
 </tr>
 </tbody>
 </table>
+
+然而这几种异常的构造器从 Controller 或者 Service 中调用起来都不太方便.
+
+##### ExceptionHandlerExceptionResolver:
+
+这个类负责处理 `@ExceptionHandler` 注解过的方法, 常用于对某种类型的异常做统一处理.
