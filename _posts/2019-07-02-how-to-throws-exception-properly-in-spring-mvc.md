@@ -120,3 +120,8 @@ public interface HandlerExceptionResolver {
 ##### ExceptionHandlerExceptionResolver:
 
 这个类负责处理 `@ExceptionHandler` 注解过的方法, 常用于对某种类型的异常做统一处理.
+
+##### SimpleMappingExceptionResolver:
+
+当抛出异常时, 这个类负责按照特定的映射关系返回对应的视图.
+
